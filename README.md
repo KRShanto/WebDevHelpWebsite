@@ -28,6 +28,8 @@ Contributions are always welcome! You can read the [contribution guide](CONTRIBU
 
 If you are interested to contribute to this project, then you can join our [Discord server](https://discord.gg/hfzkufTs).
 
+Developer details can be found in [DevDetails.md](DevDetails.md) file.
+
 ## Getting Started
 
 First, run the development server:
