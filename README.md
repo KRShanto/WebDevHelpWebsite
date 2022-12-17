@@ -1,4 +1,32 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# WebDevHelp
+
+A website where people can ask their questions related to web development and get help from others.
+
+This project is a collaboration with some of Bangladeshi web developers.
+
+*Everyone* is welcome to contribute to this project even if you are not a Bangladeshi.
+
+This project is a **community project**. So we are not going to pay anyone for contributing to this project.
+
+It is a Bangladeshi website. So the language of the website will be in Bangla. But if you are a foreigner and you want to contribute to this project, then we can also talk in English.
+
+## Why this project?
+
+There are lots of websites where people can ask their questions and get help from others. But most of them are not **Bangladeshi**. So we thought that we should create a website where people can ask their questions in their own language.
+
+This project is mainly for collaboration. It will help both advanced and beginners to learn new things. It will help us to work together and build something great.
+
+## What we are building?
+
+The website is much similar to **Discord** where people can join different channels and ask their questions.
+
+We are also building a **bot** system where the bot will try to search the errors and share the link.
+
+## Contribution
+
+Contributions are always welcome! You can read the [contribution guide](CONTRIBUTING.md) to get started.
+
+If you are interested to contribute to this project, then you can join our [Discord server](https://discord.gg/hfzkufTs).
 
 ## Getting Started
 
@@ -11,24 +39,3 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
