@@ -16,6 +16,8 @@ It uses **Mongodb Atlas** as a database.
 
 It uses **Socket.io** for handling websocket connections.
 
+It uses **Sass** for styling.
+
 ## Website Routes
 
 ### /
