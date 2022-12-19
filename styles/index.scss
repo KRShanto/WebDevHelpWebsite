@@ -1,0 +1,25 @@
+.intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.first-intro {
+  color: rgb(0, 207, 254);
+  text-shadow: 0 0 50px rgb(0, 207, 254);
+  font-size: 3rem;
+}
+
+.second-intro {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    to right,
+    red,
+    rgb(227, 31, 227),
+    rgb(224, 126, 237)
+  );
+  font-size: 3.5rem;
+}
