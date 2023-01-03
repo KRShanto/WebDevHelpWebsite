@@ -29,7 +29,7 @@ export default function App({ Component, pageProps }: AppProps) {
   }, [router]);
 
   return (
-    <>
+    <main id="main">
       <Navbar />
       <LoadingBar
         color="#ff0084"
@@ -38,6 +38,6 @@ export default function App({ Component, pageProps }: AppProps) {
         onLoaderFinished={() => setProgress(0)}
       />
       <Component {...pageProps} />
-    </>
+    </main>
   );
 }

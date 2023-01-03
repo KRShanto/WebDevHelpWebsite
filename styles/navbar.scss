@@ -3,8 +3,9 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 2rem;
+  padding: 0 2rem;
   box-shadow: 0 0 20px rgb(6, 160, 249);
+  height: 6vh;
 
   .logo {
     font-size: 1.5rem;
@@ -20,7 +21,7 @@ nav {
       margin: 0 1rem;
       text-decoration: none;
       color: white;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       transition: all 0.3s ease-in-out;
       font-weight: bold;
       color: rgb(124, 192, 245);

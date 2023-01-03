@@ -10,5 +10,10 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
+#main {
+  // height: 100vh;
+}
+
 @import "./index.scss";
 @import "./navbar.scss";
+@import "./chat.scss";
