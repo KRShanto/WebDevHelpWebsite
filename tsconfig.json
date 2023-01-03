@@ -15,6 +15,14 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "lib/dbConnect.js",
+    "models/User.js",
+    "pages/api/auth/signup.js",
+    "auth/config.js"
+  ],
   "exclude": ["node_modules"]
 }
