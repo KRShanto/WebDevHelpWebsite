@@ -22,7 +22,8 @@
     "lib/dbConnect.js",
     "models/User.js",
     "pages/api/auth/signup.js",
-    "auth/config.js"
+    "auth/config.js",
+    "pages/api/auth/[...nextauth].js"
   ],
   "exclude": ["node_modules"]
 }
