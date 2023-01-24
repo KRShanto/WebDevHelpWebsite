@@ -41,7 +41,8 @@
     }
   }
 
-  .chat-box {
+  // .chat-box {
+  .room {
     // border: 1px solid red;
     width: 80%;
 
@@ -65,7 +66,7 @@
           // border: 1px solid blue;
 
           .message-by {
-            color: white;
+            color: rgb(13, 226, 234);
             font-size: 1.2rem;
             font-weight: bold;
           }

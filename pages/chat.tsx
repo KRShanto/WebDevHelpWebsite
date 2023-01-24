@@ -1,408 +1,222 @@
 import React, { useEffect, useRef, useState } from "react";
-import { auth, db } from "../auth/config";
-import {
-  doc,
-  getDoc,
-  onSnapshot,
-  getDocs,
-  collection,
-  query,
-  where,
-  addDoc,
-  setDoc,
-  updateDoc,
-  serverTimestamp,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
-import { User } from "firebase/auth";
+import io, { Socket } from "socket.io-client";
+import useSWR from "swr";
+import { useSession, signIn } from "next-auth/react";
+import { Session } from "next-auth";
 import Image from "next/image";
-import UserImage from "../fake/user.jpg"; // TODO: temporary image
 
-const CHAT_COLLECTION = "chats";
-const USER_COLLECTION = "users";
-const MESSAGE_COLLECTION = "messages";
+async function fetcher(url: string) {
+  const res = await fetch(url);
+  const json = await res.json();
 
-// TODO: update security rules for the database
-export default function ChatPage() {
-  // NOTE: there will be 3 users each rooms
-  // 1. user1
-  // 2. user2
-  // 3. server bot
-  //
-  // There are some reserverd names -> Admin, server-bot
-
-  const [user, setUser] = useState<User | null>(null);
-  const [chats, setChats] = useState<any[]>([]);
-  const [chatsUsers, setChatsUsers] = useState<any[]>([]);
-  const [selectedChat, setSelectedChat] = useState<{
-    id: string;
-    otherUser: any;
-  } | null>(null);
-
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
-      }
-    });
-  });
-
-  useEffect(() => {
-    // get all the rooms
-    // where user's id is in the document's members array
-    if (user) {
-      const q = query(
-        collection(db, CHAT_COLLECTION),
-        where("members", "array-contains", user.uid)
-      );
-      getDocs(q).then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          // setRooms((rooms) => [...rooms, doc.id]);
-          // setRooms((rooms) => [...rooms, doc.data()]);
-          // also add the room id to the room object
-          setChats((chats) => [...chats, { ...doc.data(), id: doc.id }]);
-        });
-      });
-    }
-  }, [user]);
-
-  useEffect(() => {
-    // Get all user's (accpet current user) names and photos from the database `users` collection when rooms change
-
-    //   rooms.forEach((room) => {
-    //     const q = query(
-    //       collection(db, "users"),
-    //       where("uid", "in", room.members)
-    //     );
-    //     getDocs(q).then((querySnapshot) => {
-    //       querySnapshot.forEach((doc) => {
-    //         console.log("====================================");
-    //         console.log("USER: ", doc.data());
-    //         console.log("====================================");
-
-    //         setRoomsUsers((roomsUsers) => [...roomsUsers, doc.data()]);
-    //       });
-    //     });
-    //   });
-
-    chats.forEach((chat) => {
-      // console.log("A signle piece of room: ", room);
-      chat.members.forEach((member: string) => {
-        if (member !== user?.uid) {
-          const q = query(
-            collection(db, USER_COLLECTION),
-            where("uid", "==", member)
-          );
-          getDocs(q).then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              console.log("====================================");
-              console.log("USER: ", doc.data());
-              console.log("====================================");
-
-              setChatsUsers((chatsUsers) => [...chatsUsers, doc.data()]);
-            });
-          });
-        }
-      });
-    });
-  }, [chats, user]);
-
-  async function handleConnect(e: any) {
-    e.preventDefault();
-    // Create a new room with the given id
-    // Create a new document in the rooms collection
-    // Add both the users to the members array
-    // Add a subcollection to the document and subdocument to the subcollection
-    // subdocument: {message: "Welcome to the chat", sender: "server-bot", timestamp: serverTimestamp()}"}
-
-    const newUserId = e.target[0].value;
-    const userId = user?.uid;
-
-    if (userId && newUserId) {
-      // Query and check if the room already exists
-      const q = query(
-        collection(db, CHAT_COLLECTION),
-        // where("members", "array-contains", userId),
-        // where("members", "array-contains", newUserId)
-        // where("members", "array-contains-any", [userId, newUserId])
-        where("members", "==", [userId, newUserId])
-      );
-      const querySnapshot = await getDocs(q);
-      if (querySnapshot.size > 0) {
-        // room already exists
-        alert("Chat already exists");
-        return;
-      } else {
-        // room does not exist
-        // create a new room
-        const newChatId = `${userId}-${newUserId}`;
-        const newChatRef = doc(db, CHAT_COLLECTION, newChatId);
-        await setDoc(newChatRef, {
-          members: [userId, newUserId],
-        });
-
-        // add a subcollection to the document
-        const newChatMessagesRef = collection(newChatRef, MESSAGE_COLLECTION);
-        await addDoc(newChatMessagesRef, {
-          message: "Welcome to the chat",
-          sender: "server-bot",
-          timestamp: serverTimestamp(),
-        });
-
-        // done
-        alert("Chat created");
-
-        // update the rooms state
-        setChats((chats) => [...chats, { members: [userId, newUserId] }]);
-
-        // // update the selected room
-        // setSelectedRoom({
-        //   id: newRoomId,
-        //   otherUser: roomsUsers[roomsUsers.length - 1],
-        // });
-      }
-    } else {
-      alert("Please login");
-    }
-  }
-
-  return (
-    <div id="chat">
-      {/* <form action="#" onSubmit={handleConnect}>
-        <input
-          type="text"
-          placeholder="Enter the id of the user you want to chat with"
-        />
-        <button type="submit">Connect</button>
-      </form> */}
-
-      {/* <div className="display-rooms">
-          {rooms.map((room, index) => {
-            console.log("ROOMS USERS: ", roomsUsers);
-
-            return (
-              <div className="chat" key={index}>
-                <p>
-                  {roomsUsers[index]?.name}
-                </p>
-                <button
-                  onClick={() => {
-                    setSelectedRoom({
-                      id: room.id,
-                      otherUser: roomsUsers[index],
-                    });
-                  }}
-                >
-                  Select
-                </button>
-              </div>
-            );
-          })}
-        </div> */}
-
-      <DisplayChats
-        chats={chats}
-        chatsUsers={chatsUsers}
-        setSelectedChat={setSelectedChat}
-      />
-
-      {/* <div className="chat-box"> */}
-      {selectedChat && (
-        <>
-          <ChatBox chat={selectedChat} />
-        </>
-      )}
-      {/* </div> */}
-    </div>
-  );
+  return json.data;
 }
 
-function ChatBox({ chat }: { chat: { id: string; otherUser: any } }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [messages, setMessages] = useState<any[]>([]);
-  const [message, setMessage] = useState<string>("");
+let socket: Socket;
 
+export default function ChatPage() {
+  const { data: session, status } = useSession();
+
+  if (status === "unauthenticated") {
+    return (
+      <div>
+        <h1>You are not logged in</h1>
+        <button onClick={() => signIn()}>Sign in</button>
+      </div>
+    );
+  } else if (status === "authenticated") {
+    return <ChatApp session={session} />;
+  } else {
+    return <div>Loading...</div>;
+  }
+}
+
+function ChatApp({ session }: { session: Session }) {
+  const [selectedChat, setSelectedChat] = useState<any>(null);
+  const [messages, setMessages] = useState<any>([]);
+  const [message, setMessage] = useState<string>("");
+  const [otherUsers, setOtherUsers] = useState<any>([]);
   const messageBoxRef = useRef<HTMLDivElement>(null);
 
+  // Get the rooms
+  const {
+    data: rooms,
+    error: roomsError,
+    isLoading: roomsAreLoading,
+  } = useSWR("/api/rooms", fetcher);
+
+  // Initialize socket
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
-      }
+    initializeSocket();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Send join-room event to the server when the selected chat changes
+  useEffect(() => {
+    if (selectedChat && socket) {
+      socket.emit("join-room", selectedChat._id);
+    }
+  }, [selectedChat]);
+
+  // Get the messages when the selected chat changes
+  useEffect(() => {
+    if (selectedChat) {
+      getMessages();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedChat]);
+
+  // Get the other users
+  useEffect(() => {
+    if (rooms) {
+      const otherUsers = rooms.map((room: any) => {
+        return room.users.find(
+          (user: any) => user.email !== session.user?.email
+        );
+      });
+
+      setOtherUsers(otherUsers);
+    }
+  }, [rooms, session]);
+
+  // Get the messages when the selected chat changes
+  async function getMessages() {
+    const res = await fetch(`/api/messages/${selectedChat._id}`);
+    const json = await res.json();
+
+    if (json.type === "Success") {
+      setMessages(json.data);
+    }
+  }
+
+  // function to Initialize socket
+  async function initializeSocket() {
+    await fetch("/api/socket");
+    socket = io();
+
+    socket.on("connect", () => {
+      console.log("connected");
+
+      // Send the user's email to the server
+      socket.emit("set-userId", session.user?.email);
     });
-  });
 
-  useEffect(() => {
-    // Get all the messages of the room in real time
-    // console.log("The id of the room is: ", room);
-    const chatRef = doc(db, CHAT_COLLECTION, chat.id);
-    const messagesRef = collection(chatRef, MESSAGE_COLLECTION);
+    // Listen for the receive-message event
+    socket.on("receive-message", (msg) => {
+      console.log("The recieved message: ", msg);
+      // Update the messages
+      setMessages((messages: any) => [...messages, msg]);
 
-    onSnapshot(messagesRef, (querySnapshot) => {
-      // const messages: any[] = [];
-      // querySnapshot.forEach((doc) => {
-      //   messages.push(doc.data());
-      // });
-      // setMessages(messages);
-
-      // Set the messages with sorted order
-      const messages: any[] = [];
-      querySnapshot.forEach((doc) => {
-        console.log("The messages: ", doc.data());
-        // messages.push(doc.data());
-
-        // if the timestamp is null, don't include the msg
-        if (doc.data().timestamp) {
-          messages.push(doc.data());
-        }
-      });
-      messages.sort((a, b) => {
-        console.log("A: ", a);
-        console.log("B: ", b);
-
-        if (a.timestamp && b.timestamp) {
-          return a.timestamp.seconds - b.timestamp.seconds;
-        } else {
-          return 0;
-        }
-      });
-
-      setMessages(messages);
       // Scroll to the bottom of the messages
-      messageBoxRef.current?.scrollTo(0, 100000);
-    });
-  }, [chat]);
-
-  async function handleSendMessage(e: any) {
-    e.preventDefault();
-
-    if (message === "") return;
-
-    const msg = message;
-
-    setMessage("");
-
-    // Add a new document to the subcollection
-    // subdocument: {message: message, sender: user?.uid, timestamp: serverTimestamp()}"}
-    const chatRef = doc(db, CHAT_COLLECTION, chat.id);
-    const messagesRef = collection(chatRef, MESSAGE_COLLECTION);
-    await addDoc(messagesRef, {
-      message: msg,
-      sender: user?.uid,
-      timestamp: serverTimestamp(),
+      // TODO: Do this
+      // messageBoxRef.current?.scrollTo(0, 100000000000000);
     });
   }
 
+  // handle send message
+  async function sendMessage(e: any) {
+    // prevent the page from refreshing
+    e.preventDefault();
+
+    // Send the message to the server
+    socket.emit("send-message", message);
+
+    // Clear the input
+    setMessage("");
+  }
+
   return (
-    <div className="chat-box">
-      <div className="messages" ref={messageBoxRef}>
-        {messages.map((message, index) => {
-          return (
-            <div
-              className={`message ${
-                message.sender === user?.uid ? "sent" : "received"
-              }`}
-              key={index}
-            >
-              {/* <div className="img">
-                <Image src={UserImage} alt="user" width={50} height={50} />
-              </div> */}
+    <>
+      <div id="chat">
+        <div className="display-chats">
+          {rooms?.map((room: any, index: number) => {
+            return (
+              <button
+                className="chat"
+                key={index}
+                onClick={() => {
+                  setSelectedChat(room);
+                }}
+              >
+                <ChatName room={room} session={session} />
+              </button>
+            );
+          })}
+        </div>
+        {selectedChat && (
+          <div className="room">
+            <div className="messages" ref={messageBoxRef}>
+              {messages.map((message: any, index: number) => {
+                const otherMessageUser = otherUsers.filter(
+                  (user: any) => user.email === message.senderEmail
+                )[0];
 
-              {
-                // If the message is NOT sent by the user, show the user's image beside the message
-                message.sender !== user?.uid && (
-                  <div className="img">
-                    <Image src={UserImage} alt="user" width={50} height={50} />
-                  </div>
-                )
-              }
-
-              <div className="message-div">
-                <p className="message-by">
-                  {message.sender === user?.uid
-                    ? ""
-                    : message.sender !== "server-bot"
-                    ? chat.otherUser.name
-                    : "Server Bot"}
-                </p>
-                <p className="message-text">{message.message}</p>
-              </div>
-
-              {
-                // // If the message is sent by the user, show the other user's image beside the message
-                // message.sender === user?.uid && (
-                //   <div className="img">
-                //     <Image src={UserImage} alt="user" width={50} height={50} />
-                //   </div>
-                // )
-              }
+                return (
+                  <Message
+                    message={message}
+                    otherUser={otherMessageUser}
+                    session={session}
+                    key={index}
+                  />
+                );
+              })}
             </div>
-          );
-        })}
+
+            <form action="#" className="input-message" onSubmit={sendMessage}>
+              <input
+                type="text"
+                placeholder="Enter your message"
+                onChange={(e) => {
+                  setMessage(e.target.value);
+                }}
+              />
+              <button type="submit">Send</button>
+            </form>
+          </div>
+        )}
       </div>
-      <form action="#" onSubmit={handleSendMessage} className="input-message">
-        <input
-          type="text"
-          placeholder="Enter your message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        <button type="submit">Send</button>
-      </form>
-    </div>
+    </>
   );
 }
 
-function DisplayChats({
-  chats,
-  setSelectedChat,
-  chatsUsers,
-}: {
-  chats: any;
-  setSelectedChat: any;
-  chatsUsers: any;
-}) {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
-      }
-    });
-  }, []);
+function ChatName({ room, session }: any) {
+  const otherUser = room.users.filter(
+    (user: any) => user.email !== session.user?.email
+  )[0];
 
   return (
-    <div className="display-chats">
-      {chats.map((chat: any, index: number) => {
-        return (
-          <button
-            className="chat"
-            key={index}
-            onClick={() => {
-              setSelectedChat({
-                id: chat.id,
-                otherUser: chatsUsers[index],
-              });
-            }}
-          >
-            {/* {roomsUsers[index]?.name} */}
-            <div className="img">
-              <Image src={UserImage} width={70} height={70} alt="user" />
-            </div>
-            <div className="name">
-              <p>{chatsUsers[index]?.name}</p>
-            </div>
-          </button>
-        );
-      })}
+    <>
+      <div className="img">
+        <Image src={otherUser.image} alt="user" width={70} height={70} />
+      </div>
+      <div className="name">
+        <p>{otherUser.name}</p>
+      </div>
+    </>
+  );
+}
+
+function Message({ message, otherUser, session }: any) {
+  const isSentByCurrentUser = message.senderEmail === session.user?.email;
+
+  return (
+    <div className={`message ${isSentByCurrentUser ? "sent" : "received"}`}>
+      {
+        // If the message is NOT sent by the current user, show the user's image beside the message
+        !isSentByCurrentUser && (
+          <div className="img">
+            <Image src={otherUser.image} alt="user" width={70} height={70} />
+          </div>
+        )
+      }
+
+      <div className="message-div">
+        <p className="message-by">
+          {isSentByCurrentUser ? "You" : otherUser.name}
+        </p>
+        <p className="message-text">{message.text}</p>
+      </div>
     </div>
   );
 }

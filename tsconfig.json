@@ -23,7 +23,10 @@
     "models/User.js",
     "pages/api/auth/signup.js",
     "auth/config.js",
-    "pages/api/auth/[...nextauth].js"
+    "pages/api/auth/[...nextauth].js",
+    "pages/api/socket.js",
+    "pages/api/socket.js",
+    "pages/api/create-room.js"
   ],
   "exclude": ["node_modules"]
 }
