@@ -5,6 +5,27 @@ import { useSession, signIn } from "next-auth/react";
 import { Session } from "next-auth";
 import Image from "next/image";
 
+type Room = {
+  _id: string;
+  users: User[];
+  createdAt: string;
+};
+
+type User = {
+  name: string;
+  email: string;
+  image: string;
+};
+
+type Message = {
+  _id: string;
+  roomId: string;
+  senderEmail: string;
+  senderId: string;
+  text: string;
+  createdAt: string;
+};
+
 async function fetcher(url: string) {
   const res = await fetch(url);
   const json = await res.json();
@@ -32,10 +53,9 @@ export default function ChatPage() {
 }
 
 function ChatApp({ session }: { session: Session }) {
-  const [selectedChat, setSelectedChat] = useState<any>(null);
-  const [messages, setMessages] = useState<any>([]);
-  const [message, setMessage] = useState<string>("");
-  const [otherUsers, setOtherUsers] = useState<any>([]);
+  const [selectedChat, setSelectedChat] = useState<Room | null>(null); // TODO: change this to selectedRoom
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [otherUsers, setOtherUsers] = useState<User[]>([]);
   const messageBoxRef = useRef<HTMLDivElement>(null);
 
   // Get the rooms
@@ -82,7 +102,7 @@ function ChatApp({ session }: { session: Session }) {
 
   // Get the messages when the selected chat changes
   async function getMessages() {
-    const res = await fetch(`/api/messages/${selectedChat._id}`);
+    const res = await fetch(`/api/messages/${selectedChat?._id}`);
     const json = await res.json();
 
     if (json.type === "Success") {
@@ -114,73 +134,29 @@ function ChatApp({ session }: { session: Session }) {
     });
   }
 
-  // handle send message
-  async function sendMessage(e: any) {
-    // prevent the page from refreshing
-    e.preventDefault();
-
-    // Send the message to the server
-    socket.emit("send-message", message);
-
-    // Clear the input
-    setMessage("");
-  }
-
   return (
     <>
       <div id="chat">
-        <div className="display-chats">
-          {rooms?.map((room: any, index: number) => {
-            return (
-              <button
-                className="chat"
-                key={index}
-                onClick={() => {
-                  setSelectedChat(room);
-                }}
-              >
-                <ChatName room={room} session={session} />
-              </button>
-            );
-          })}
-        </div>
+        <DisplayRooms
+          rooms={rooms}
+          setSelectedChat={setSelectedChat}
+          session={session}
+        />
+
         {selectedChat && (
-          <div className="room">
-            <div className="messages" ref={messageBoxRef}>
-              {messages.map((message: any, index: number) => {
-                const otherMessageUser = otherUsers.filter(
-                  (user: any) => user.email === message.senderEmail
-                )[0];
-
-                return (
-                  <Message
-                    message={message}
-                    otherUser={otherMessageUser}
-                    session={session}
-                    key={index}
-                  />
-                );
-              })}
-            </div>
-
-            <form action="#" className="input-message" onSubmit={sendMessage}>
-              <input
-                type="text"
-                placeholder="Enter your message"
-                onChange={(e) => {
-                  setMessage(e.target.value);
-                }}
-              />
-              <button type="submit">Send</button>
-            </form>
-          </div>
+          <Room
+            messages={messages}
+            messageBoxRef={messageBoxRef}
+            otherUsers={otherUsers}
+            session={session}
+          />
         )}
       </div>
     </>
   );
 }
 
-function ChatName({ room, session }: any) {
+function ChatName({ room, session }: { room: Room; session: Session }) {
   const otherUser = room.users.filter(
     (user: any) => user.email !== session.user?.email
   )[0];
@@ -197,7 +173,15 @@ function ChatName({ room, session }: any) {
   );
 }
 
-function Message({ message, otherUser, session }: any) {
+function Message({
+  message,
+  otherUser,
+  session,
+}: {
+  message: Message;
+  otherUser: User;
+  session: Session;
+}) {
   const isSentByCurrentUser = message.senderEmail === session.user?.email;
 
   return (
@@ -217,6 +201,82 @@ function Message({ message, otherUser, session }: any) {
         </p>
         <p className="message-text">{message.text}</p>
       </div>
+    </div>
+  );
+}
+
+function Room({ messages, messageBoxRef, session, otherUsers }: any) {
+  const [message, setMessage] = useState<string>("");
+
+  // handle send message
+  async function sendMessage(e: any) {
+    // prevent the page from refreshing
+    e.preventDefault();
+
+    // Send the message to the server
+    socket.emit("send-message", message);
+
+    // Clear the input
+    setMessage("");
+  }
+
+  return (
+    <div className="room">
+      <div className="messages" ref={messageBoxRef}>
+        {messages.map((message: any, index: number) => {
+          const otherMessageUser = otherUsers.filter(
+            (user: any) => user.email === message.senderEmail
+          )[0];
+
+          return (
+            <Message
+              message={message}
+              otherUser={otherMessageUser}
+              session={session}
+              key={index}
+            />
+          );
+        })}
+      </div>
+
+      <form action="#" className="input-message" onSubmit={sendMessage}>
+        <input
+          type="text"
+          placeholder="Enter your message"
+          onChange={(e) => {
+            setMessage(e.target.value);
+          }}
+        />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  );
+}
+
+function DisplayRooms({
+  rooms,
+  session,
+  setSelectedChat,
+}: {
+  rooms: Room[];
+  session: Session;
+  setSelectedChat: React.Dispatch<React.SetStateAction<Room | null>>;
+}) {
+  return (
+    <div className="display-rooms">
+      {rooms?.map((room: any, index: number) => {
+        return (
+          <button
+            className="room"
+            key={index}
+            onClick={() => {
+              setSelectedChat(room);
+            }}
+          >
+            <ChatName room={room} session={session} />
+          </button>
+        );
+      })}
     </div>
   );
 }
