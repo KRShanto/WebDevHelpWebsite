@@ -24,6 +24,11 @@ nav {
       transition: all 0.3s ease-in-out;
       font-weight: bold;
       color: rgb(124, 192, 245);
+      // These are for the button
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      outline: none;
 
       &:hover {
         color: rgb(0, 132, 255);
