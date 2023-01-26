@@ -9,34 +9,37 @@
     display: flex;
     flex-direction: column;
 
-    .room {
-      margin: 5px 0;
-      background-color: transparent;
-      // border: 2px solid #ccc;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      padding: 5px 10px;
-      outline: none;
-      border: none;
-      transition: 0.3s;
-      cursor: pointer;
+    .users {
+      .user {
+        margin: 5px 0;
+        background-color: transparent;
+        // border: 2px solid #ccc;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 5px 10px;
+        outline: none;
+        border: none;
+        transition: 0.3s;
+        cursor: pointer;
 
-      &:hover {
-        background-color: rgb(76, 118, 160);
-        box-shadow: 0 0 20px rgb(102, 177, 227);
-      }
+        &:hover {
+          // background-color: rgb(76, 118, 160);
+          background-color: rgb(12, 88, 146);
+          box-shadow: 0 0 20px rgb(102, 177, 227);
+        }
 
-      img {
-        border-radius: 50%;
-        margin-right: 20px;
-      }
+        img {
+          border-radius: 50%;
+          margin-right: 20px;
+        }
 
-      .name {
-        color: white;
-        font-size: 1.2rem;
-        font-weight: bold;
+        .name {
+          color: white;
+          font-size: 1.2rem;
+          font-weight: bold;
+        }
       }
     }
   }

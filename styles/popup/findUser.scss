@@ -1,0 +1,124 @@
+.find-user-popup {
+  //   border: 3px solid red;
+  position: fixed;
+  width: 50vw;
+  // height: 50vh;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px white;
+  background-color: rgb(3, 15, 28);
+  // overflow: scroll;
+
+  .search {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .heading {
+      color: rgb(124, 192, 245);
+    }
+
+    .input-div {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      margin: 20px;
+
+      input {
+        color: rgb(229, 229, 229);
+        padding: 10px;
+        font-size: 1.4rem;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        border-bottom: 3px solid rgb(124, 192, 245);
+        width: 80%;
+      }
+
+      button {
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 20px;
+        background-color: rgb(4, 61, 152);
+        border: none;
+        outline: none;
+        cursor: pointer;
+        box-shadow: 0 0 3px white;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .found-users {
+    // border: 2px solid red;
+    height: 60vh;
+    overflow-y: scroll;
+
+    .user {
+      position: relative;
+      margin: 5px 0;
+      background-color: transparent;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 5px 10px;
+      outline: none;
+      border: none;
+
+      img {
+        border-radius: 50%;
+        margin-right: 20px;
+      }
+
+      .name {
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      .connect {
+        position: absolute;
+        right: 10px;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        background-color: rgb(4, 61, 152);
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+        outline: none;
+        box-shadow: 0 0 3px white;
+      }
+    }
+  }
+
+  .close {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 20px;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: rgb(152, 4, 38);
+    padding: 20px 40px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    box-shadow: 0 0 3px white;
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+      background-color: rgb(186, 0, 6);
+    }
+  }
+}

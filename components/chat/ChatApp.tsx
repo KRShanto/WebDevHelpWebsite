@@ -5,6 +5,8 @@ import { MessageType, RoomType, UserType } from "../../types/chat";
 import { Socket, io } from "socket.io-client";
 import DisplayRooms from "./DisplayRooms";
 import Room from "./Room";
+import Image from "next/image";
+import FindUserPopup from "../popup/FindUserPopup";
 
 async function fetcher(url: string) {
   const res = await fetch(url);
@@ -16,10 +18,13 @@ async function fetcher(url: string) {
 let socket: Socket;
 
 export default function ChatApp({ session }: { session: Session }) {
-  const [selectedChat, setSelectedChat] = useState<RoomType | null>(null); // TODO: change this to selectedRoom
+  const [selectedRoom, setSelectedRoom] = useState<RoomType | null>(null); // TODO: change this to selectedRoom
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [otherUsers, setOtherUsers] = useState<UserType[]>([]);
   const messageBoxRef = useRef<HTMLDivElement>(null);
+  const [showConnectUserPopup, setShowConnectUserPopup] =
+    useState<boolean>(false); // TODO: Use `popup` state instead. Also make a popup component
+  const [popup, setPopup] = useState<"FindUserPopup" | null>(null); // TODO: use redux instead. Also make a popup component
 
   // Get the rooms
   const {
@@ -36,19 +41,19 @@ export default function ChatApp({ session }: { session: Session }) {
 
   // Send join-room event to the server when the selected chat changes
   useEffect(() => {
-    if (selectedChat && socket) {
-      socket.emit("join-room", selectedChat._id);
+    if (selectedRoom && socket) {
+      socket.emit("join-room", selectedRoom._id);
     }
-  }, [selectedChat]);
+  }, [selectedRoom]);
 
   // Get the messages when the selected chat changes
   useEffect(() => {
-    if (selectedChat) {
+    if (selectedRoom) {
       getMessages();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedChat]);
+  }, [selectedRoom]);
 
   // Get the other users
   useEffect(() => {
@@ -65,7 +70,7 @@ export default function ChatApp({ session }: { session: Session }) {
 
   // Get the messages when the selected chat changes
   async function getMessages() {
-    const res = await fetch(`/api/messages/${selectedChat?._id}`);
+    const res = await fetch(`/api/messages/${selectedRoom?._id}`);
     const json = await res.json();
 
     if (json.type === "Success") {
@@ -100,13 +105,22 @@ export default function ChatApp({ session }: { session: Session }) {
   return (
     <>
       <div id="chat">
+        {showConnectUserPopup && (
+          <FindUserPopup
+            setShowConnectUserPopup={setShowConnectUserPopup}
+            session={session}
+            otherUsers={otherUsers}
+          />
+        )}
+
         <DisplayRooms
           rooms={rooms}
-          setSelectedChat={setSelectedChat}
+          setSelectedRoom={setSelectedRoom}
           session={session}
+          setShowConnectUserPopup={setShowConnectUserPopup}
         />
 
-        {selectedChat && (
+        {selectedRoom && (
           <Room
             messages={messages}
             messageBoxRef={messageBoxRef}

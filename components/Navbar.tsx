@@ -14,9 +14,9 @@ export default function Navbar() {
           Chat
         </Link>
 
-        <Link href="/signup" className="link">
+        {/* <Link href="/signup" className="link">
           Signup
-        </Link>
+        </Link> */}
 
         <a
           href="https://github.com/WebDevHelpBD/backend"

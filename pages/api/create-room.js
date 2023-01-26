@@ -6,7 +6,7 @@ import { unstable_getServerSession } from "next-auth/next";
 
 export default async function handler(req, res) {
   const session = await unstable_getServerSession(req, res, authOptions);
-  const { anotherUserId } = req.body;
+  const { anotherUserEmail } = req.body;
 
   await dbConnect();
 
@@ -22,18 +22,28 @@ export default async function handler(req, res) {
   const user = await User.findOne({ email: session.user.email });
 
   // ************ Check if the anotherUserId is session user or not ************ //
-  if (anotherUserId === user._id) {
-    return res.status(400).json({
-      type: "BadRequest",
+  if (anotherUserEmail === user.email) {
+    return res.status(200).json({
+      type: "SameUser",
       message: "You can't create a room with yourself",
+    });
+  }
+
+  // *********** Find out the anotherUser from the database (we need _id field) *********** //
+  const anotherUser = await User.findOne({ email: anotherUserEmail });
+
+  // ************* Check if the anotherUser is valid ************** //
+  if (!anotherUser) {
+    return res.status(404).json({
+      type: "NotFound",
+      message: "User not found",
     });
   }
 
   // ************* Check if the room already exists ************* //
   const room = await Room.findOne({
-    users: {
-      $all: [{ _id: user._id }, { _id: anotherUserId }],
-    },
+    // Check if the two users are in the same room (not just one of them)
+    $and: [{ "users._id": user._id }, { "users._id": anotherUser._id }],
   });
 
   if (room) {
@@ -41,16 +51,8 @@ export default async function handler(req, res) {
       type: "AlreadyExists",
       message: "Room already exists",
     });
-  }
-
-  // ************* Check if the anotherUser is valid ************** //
-  const anotherUser = await User.findOne({ _id: anotherUserId });
-
-  if (!anotherUser) {
-    return res.status(404).json({
-      type: "NotFound",
-      message: "User not found",
-    });
+  } else {
+    console.log("The room doesn't exist yet");
   }
 
   // ************* Create a room ************** //

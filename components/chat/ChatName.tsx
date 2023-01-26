@@ -15,12 +15,14 @@ export default function ChatName({
 
   return (
     <>
-      <div className="img">
-        <Image src={otherUser.image} alt="user" width={70} height={70} />
-      </div>
-      <div className="name">
-        <p>{otherUser.name}</p>
-      </div>
+      <Image
+        className="img"
+        src={otherUser.image}
+        alt="user"
+        width={70}
+        height={70}
+      />
+      <p className="name">{otherUser.name}</p>
     </>
   );
 }

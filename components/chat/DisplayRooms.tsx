@@ -1,31 +1,45 @@
 import { RoomType } from "../../types/chat";
 import { Session } from "next-auth";
 import ChatName from "./ChatName";
+import { Dispatch, SetStateAction } from "react";
 
 export default function DisplayRooms({
   rooms,
   session,
-  setSelectedChat,
+  setSelectedRoom,
+  setShowConnectUserPopup,
 }: {
   rooms: RoomType[];
   session: Session;
-  setSelectedChat: React.Dispatch<React.SetStateAction<RoomType | null>>;
+  setSelectedRoom: Dispatch<SetStateAction<RoomType | null>>;
+  setShowConnectUserPopup: Dispatch<SetStateAction<boolean>>;
 }) {
   return (
     <div className="display-rooms">
-      {rooms?.map((room: any, index: number) => {
-        return (
-          <button
-            className="room"
-            key={index}
-            onClick={() => {
-              setSelectedChat(room);
-            }}
-          >
-            <ChatName room={room} session={session} />
-          </button>
-        );
-      })}
+      <div className="users">
+        {rooms?.map((room: any, index: number) => {
+          return (
+            <button
+              className="user"
+              key={index}
+              onClick={() => {
+                setSelectedRoom(room);
+              }}
+            >
+              <ChatName room={room} session={session} />
+            </button>
+          );
+        })}
+      </div>
+
+      <button
+        className="connect-user"
+        onClick={() => {
+          setShowConnectUserPopup(true);
+        }}
+      >
+        Connect User
+      </button>
     </div>
   );
 }
