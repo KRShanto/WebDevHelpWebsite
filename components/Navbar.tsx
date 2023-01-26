@@ -1,7 +1,10 @@
 import React from "react";
 import Link from "next/link";
+import { signIn, useSession, signOut } from "next-auth/react";
 
 export default function Navbar() {
+  const { data: session } = useSession();
+
   return (
     <nav>
       <div className="logo">WebDevHelp</div>
@@ -14,12 +17,22 @@ export default function Navbar() {
           Chat
         </Link>
 
-        {/* <Link href="/signup" className="link">
-          Signup
-        </Link> */}
+        <Link href="/questions" className="link">
+          Questions
+        </Link>
+
+        {session ? (
+          <button className="link" onClick={() => signOut()}>
+            Sign Out
+          </button>
+        ) : (
+          <button className="link" onClick={() => signIn()}>
+            Sign In
+          </button>
+        )}
 
         <a
-          href="https://github.com/WebDevHelpBD/backend"
+          href="https://github.com/KRShanto/WebDevHelpWebsite"
           className="link"
           target="_blank"
           rel="noreferrer"
