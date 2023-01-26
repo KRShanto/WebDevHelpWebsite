@@ -18,7 +18,7 @@ async function fetcher(url: string) {
 let socket: Socket;
 
 export default function ChatApp({ session }: { session: Session }) {
-  const [selectedRoom, setSelectedRoom] = useState<RoomType | null>(null); // TODO: change this to selectedRoom
+  const [selectedRoom, setSelectedRoom] = useState<RoomType | null>(null);
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [otherUsers, setOtherUsers] = useState<UserType[]>([]);
   const messageBoxRef = useRef<HTMLDivElement>(null);

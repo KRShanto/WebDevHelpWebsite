@@ -32,14 +32,16 @@ export default function DisplayRooms({
         })}
       </div>
 
-      <button
-        className="connect-user"
-        onClick={() => {
-          setShowConnectUserPopup(true);
-        }}
-      >
-        Connect User
-      </button>
+      <div className="options">
+        <button
+          className="connect-user"
+          onClick={() => {
+            setShowConnectUserPopup(true);
+          }}
+        >
+          Connect User
+        </button>
+      </div>
     </div>
   );
 }

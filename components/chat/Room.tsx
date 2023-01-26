@@ -57,6 +57,7 @@ export default function Room({
           onChange={(e) => {
             setMessage(e.target.value);
           }}
+          value={message}
         />
         <button type="submit">Send</button>
       </form>
