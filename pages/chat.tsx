@@ -1,4 +1,5 @@
 import { useSession, signIn } from "next-auth/react";
+import Head from "next/head";
 import ChatApp from "../components/chat/ChatApp";
 
 export default function ChatPage() {
@@ -12,7 +13,19 @@ export default function ChatPage() {
       </div>
     );
   } else if (status === "authenticated") {
-    return <ChatApp session={session} />;
+    return (
+      <>
+        <Head>
+          <title>General Chat</title>
+          <meta
+            name="description"
+            content="General chatting page site's users"
+          />
+        </Head>
+
+        <ChatApp session={session} />
+      </>
+    );
   } else {
     return <div>Loading...</div>;
   }
