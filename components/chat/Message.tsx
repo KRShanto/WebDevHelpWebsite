@@ -5,13 +5,13 @@ import { Session } from "next-auth";
 export default function Message({
   message,
   otherUser,
-  session,
+  sessionUser,
 }: {
   message: MessageType;
   otherUser: UserType;
-  session: Session;
+  sessionUser: UserType;
 }) {
-  const isSentByCurrentUser = message.senderEmail === session.user?.email;
+  const isSentByCurrentUser = message.senderId === sessionUser._id;
 
   return (
     <div className={`message ${isSentByCurrentUser ? "sent" : "received"}`}>

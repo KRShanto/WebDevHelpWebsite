@@ -11,10 +11,6 @@ const MessageSchema = new Schema({
     ref: "User",
     required: true,
   },
-  senderEmail: {
-    type: String,
-    required: true,
-  },
   text: {
     type: String,
     required: true,

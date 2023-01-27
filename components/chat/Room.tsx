@@ -7,13 +7,13 @@ import Message from "./Message";
 export default function Room({
   messages,
   messageBoxRef,
-  session,
+  sessionUser,
   otherUsers,
   socket,
 }: {
   messages: MessageType[];
   messageBoxRef: any;
-  session: Session;
+  sessionUser: UserType;
   otherUsers: UserType[];
   socket: Socket;
 }) {
@@ -36,14 +36,14 @@ export default function Room({
       <div className="messages" ref={messageBoxRef}>
         {messages.map((message: any, index: number) => {
           const otherMessageUser = otherUsers.filter(
-            (user: any) => user.email === message.senderEmail
+            (user: any) => user._id === message.senderId
           )[0];
 
           return (
             <Message
               message={message}
               otherUser={otherMessageUser}
-              session={session}
+              sessionUser={sessionUser}
               key={index}
             />
           );

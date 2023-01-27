@@ -20,19 +20,16 @@ export default async function handler(req, res) {
   // ******** Get the data from the request body ******** //
   const { title, description, tags } = req.body;
 
-  // *********** Find out the session.user from the database (we need _id field) *********** //
-  const user = await User.findOne({ email: session.user.email });
-
   // ************* Create a question ************** //
   const newQuestion = new Question({
     title,
     description,
     tags,
     user: {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      image: user.image,
+      _id: session.user._id,
+      name: session.user.name,
+      email: session.user.email,
+      image: session.user.image,
     },
   });
 

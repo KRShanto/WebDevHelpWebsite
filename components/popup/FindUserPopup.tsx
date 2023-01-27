@@ -9,11 +9,11 @@ type FoundUserType = UserType & {
 
 export default function FindUserPopup({
   setShowConnectUserPopup,
-  session,
+  sessionUser,
   otherUsers,
 }: {
   setShowConnectUserPopup: Dispatch<SetStateAction<boolean>>;
-  session: Session;
+  sessionUser: UserType;
   otherUsers: UserType[];
 }) {
   const [foundUsers, setFoundUsers] = useState<FoundUserType[]>([]);
@@ -31,19 +31,18 @@ export default function FindUserPopup({
     console.log("user found data: ", json);
 
     if (json.type === "Success") {
-      // setFoundUsers(json.data);
       // Check if the user is the current user or already connected
       const foundUsers = json.data.map((user: UserType) => {
         let canConnect = true;
 
         // Check if the user is the current user
-        if (user.email === session.user?.email) {
+        if (user._id === sessionUser._id) {
           canConnect = false;
         }
 
         // Check if the user is already connected
         for (let i = 0; i < otherUsers.length; i++) {
-          if (user.email === otherUsers[i].email) {
+          if (user._id === otherUsers[i]._id) {
             canConnect = false;
             break;
           }
@@ -59,22 +58,29 @@ export default function FindUserPopup({
     }
   }
 
-  async function handleConnect(anotherUserEmail: string) {
+  async function handleConnect(anotherUserId: string) {
+    console.log("anotherUserId: ", anotherUserId);
+
     const res = await fetch("/api/create-room", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ anotherUserEmail }),
+      body: JSON.stringify({ anotherUserId }),
     });
 
     const json = await res.json();
     console.log("connect room data: ", json);
+
+    if (json.type === "Success") {
+      // close the popup
+      setShowConnectUserPopup(false);
+    }
   }
 
   return (
     <div className="find-user-popup">
-      <form className="search" action="" onSubmit={handleSearch}>
+      <form className="search" onSubmit={handleSearch}>
         <h2 className="heading">Search name or id for of the user</h2>
         <div className="input-div">
           <input type="text" id="user-search" />
@@ -98,7 +104,7 @@ export default function FindUserPopup({
                 <button
                   type="submit"
                   className="connect"
-                  onClick={() => handleConnect(user.email)}
+                  onClick={() => handleConnect(user._id)}
                 >
                   Connect
                 </button>

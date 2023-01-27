@@ -3,6 +3,7 @@ import dbConnect from "../../../lib/dbConnect";
 
 // Get users by their _id or name
 // First try to find by _id, if not found, try to find by name
+// TODO: Find by email
 export default async function handler(req, res) {
   const { idName } = req.query;
 

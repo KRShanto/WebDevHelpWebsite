@@ -1,16 +1,16 @@
 import Image from "next/image";
-import { RoomType } from "../../types/chat";
+import { RoomType, UserType } from "../../types/chat";
 import { Session } from "next-auth";
 
 export default function ChatName({
   room,
-  session,
+  sessionUser,
 }: {
   room: RoomType;
-  session: Session;
+  sessionUser: UserType;
 }) {
   const otherUser = room.users.filter(
-    (user: any) => user.email !== session.user?.email
+    (user: any) => user._id !== sessionUser._id
   )[0];
 
   return (

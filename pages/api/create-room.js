@@ -6,7 +6,7 @@ import { unstable_getServerSession } from "next-auth/next";
 
 export default async function handler(req, res) {
   const session = await unstable_getServerSession(req, res, authOptions);
-  const { anotherUserEmail } = req.body;
+  const { anotherUserId } = req.body;
 
   await dbConnect();
 
@@ -18,11 +18,8 @@ export default async function handler(req, res) {
     });
   }
 
-  // *********** Find out the session.user from the database (we need _id field) *********** //
-  const user = await User.findOne({ email: session.user.email });
-
   // ************ Check if the anotherUserId is session user or not ************ //
-  if (anotherUserEmail === user.email) {
+  if (anotherUserId === session.user._id) {
     return res.status(200).json({
       type: "SameUser",
       message: "You can't create a room with yourself",
@@ -30,7 +27,7 @@ export default async function handler(req, res) {
   }
 
   // *********** Find out the anotherUser from the database (we need _id field) *********** //
-  const anotherUser = await User.findOne({ email: anotherUserEmail });
+  const anotherUser = await User.findOne({ _id: anotherUserId });
 
   // ************* Check if the anotherUser is valid ************** //
   if (!anotherUser) {
@@ -43,7 +40,7 @@ export default async function handler(req, res) {
   // ************* Check if the room already exists ************* //
   const room = await Room.findOne({
     // Check if the two users are in the same room (not just one of them)
-    $and: [{ "users._id": user._id }, { "users._id": anotherUser._id }],
+    $and: [{ "users._id": session.user._id }, { "users._id": anotherUser._id }],
   });
 
   if (room) {
@@ -59,10 +56,10 @@ export default async function handler(req, res) {
   const newRoom = new Room({
     users: [
       {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        image: user.image,
+        _id: session.user._id,
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image,
       },
       {
         _id: anotherUser._id,

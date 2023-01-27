@@ -1,7 +1,6 @@
 import { Server } from "socket.io";
 import dbConnect from "../../lib/dbConnect";
 import Message from "../../models/Message";
-import User from "../../models/User";
 
 const SocketHandler = async (req, res) => {
   await dbConnect();
@@ -14,16 +13,11 @@ const SocketHandler = async (req, res) => {
     io.on("connection", (socket) => {
       console.log("A user connected: " + socket.id);
 
-      // ******** Set the user id and email ************ //
-      socket.on("set-userId", async (userEmail) => {
-        // Find the user in the database using the email
-        const user = await User.findOne({
-          email: userEmail,
-        });
-
+      // ******** Set the user id ************ //
+      socket.on("set-userId", async (userId) => {
         // Save the user id and email to the socket session for this client
-        socket.userId = user._id;
-        socket.userEmail = userEmail;
+        socket.userId = userId;
+        // socket.userEmail = userEmail;
       });
 
       // ******** Join/Change the room ************ //
@@ -43,7 +37,7 @@ const SocketHandler = async (req, res) => {
         const newMessage = new Message({
           roomId: socket.roomId,
           senderId: socket.userId,
-          senderEmail: socket.userEmail,
+          // senderEmail: socket.userEmail,
           text: message,
         });
 

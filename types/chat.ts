@@ -5,6 +5,7 @@ export type RoomType = {
 };
 
 export type UserType = {
+  _id: string;
   name: string;
   email: string;
   image: string;

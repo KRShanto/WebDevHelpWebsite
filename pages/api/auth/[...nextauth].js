@@ -17,6 +17,17 @@ export const authOptions = {
   theme: {
     colorScheme: "dark",
   },
+
+  // Set a `id` property on the session to use as a unique identifier instead of using the email address.
+  // This is useful if we want to use a different property to identify the user, such as a username.
+  callbacks: {
+    session: async (session) => {
+      if (session?.user) {
+        session.session.user._id = session.user.id;
+      }
+      return session.session;
+    },
+  },
 };
 
 export default NextAuth(authOptions);

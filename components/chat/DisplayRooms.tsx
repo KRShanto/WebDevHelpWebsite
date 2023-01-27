@@ -1,16 +1,16 @@
-import { RoomType } from "../../types/chat";
+import { RoomType, UserType } from "../../types/chat";
 import { Session } from "next-auth";
 import ChatName from "./ChatName";
 import { Dispatch, SetStateAction } from "react";
 
 export default function DisplayRooms({
   rooms,
-  session,
+  sessionUser,
   setSelectedRoom,
   setShowConnectUserPopup,
 }: {
   rooms: RoomType[];
-  session: Session;
+  sessionUser: UserType;
   setSelectedRoom: Dispatch<SetStateAction<RoomType | null>>;
   setShowConnectUserPopup: Dispatch<SetStateAction<boolean>>;
 }) {
@@ -26,7 +26,7 @@ export default function DisplayRooms({
                 setSelectedRoom(room);
               }}
             >
-              <ChatName room={room} session={session} />
+              <ChatName room={room} sessionUser={sessionUser} />
             </button>
           );
         })}

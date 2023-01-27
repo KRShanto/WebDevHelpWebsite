@@ -19,13 +19,10 @@ export default async function handler(req, res) {
     });
   }
 
-  // *********** Find out the session.user from the database (we need _id field) *********** //
-  const user = await User.findOne({ email: session.user.email });
-
   // ************ Search for all rooms where the user is present ************ //
   const rooms = await Room.find({
     users: {
-      $elemMatch: { _id: user._id },
+      $elemMatch: { _id: session.user._id },
     },
   });
 

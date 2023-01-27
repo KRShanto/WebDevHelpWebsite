@@ -6,6 +6,7 @@ export default function ChatPage() {
   const { data: session, status } = useSession();
 
   if (status === "unauthenticated") {
+    // TODO: style this
     return (
       <div>
         <h1>You are not logged in</h1>
@@ -23,7 +24,8 @@ export default function ChatPage() {
           />
         </Head>
 
-        <ChatApp session={session} />
+        {/* @ts-ignore */}
+        <ChatApp sessionUser={session.user} />
       </>
     );
   } else {

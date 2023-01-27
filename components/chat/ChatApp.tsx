@@ -5,7 +5,6 @@ import { MessageType, RoomType, UserType } from "../../types/chat";
 import { Socket, io } from "socket.io-client";
 import DisplayRooms from "./DisplayRooms";
 import Room from "./Room";
-import Image from "next/image";
 import FindUserPopup from "../popup/FindUserPopup";
 
 async function fetcher(url: string) {
@@ -17,7 +16,7 @@ async function fetcher(url: string) {
 
 let socket: Socket;
 
-export default function ChatApp({ session }: { session: Session }) {
+export default function ChatApp({ sessionUser }: { sessionUser: UserType }) {
   const [selectedRoom, setSelectedRoom] = useState<RoomType | null>(null);
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [otherUsers, setOtherUsers] = useState<UserType[]>([]);
@@ -51,7 +50,6 @@ export default function ChatApp({ session }: { session: Session }) {
     if (selectedRoom) {
       getMessages();
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRoom]);
 
@@ -59,14 +57,12 @@ export default function ChatApp({ session }: { session: Session }) {
   useEffect(() => {
     if (rooms) {
       const otherUsers = rooms.map((room: any) => {
-        return room.users.find(
-          (user: any) => user.email !== session.user?.email
-        );
+        return room.users.find((user: any) => user._id !== sessionUser._id);
       });
 
       setOtherUsers(otherUsers);
     }
-  }, [rooms, session]);
+  }, [rooms, sessionUser]);
 
   // Get the messages when the selected chat changes
   async function getMessages() {
@@ -84,10 +80,10 @@ export default function ChatApp({ session }: { session: Session }) {
     socket = io();
 
     socket.on("connect", () => {
-      console.log("connected");
+      console.log("Connected with Socket");
 
       // Send the user's email to the server
-      socket.emit("set-userId", session.user?.email);
+      socket.emit("set-userId", sessionUser._id);
     });
 
     // Listen for the receive-message event
@@ -108,7 +104,7 @@ export default function ChatApp({ session }: { session: Session }) {
         {showConnectUserPopup && (
           <FindUserPopup
             setShowConnectUserPopup={setShowConnectUserPopup}
-            session={session}
+            sessionUser={sessionUser}
             otherUsers={otherUsers}
           />
         )}
@@ -116,7 +112,7 @@ export default function ChatApp({ session }: { session: Session }) {
         <DisplayRooms
           rooms={rooms}
           setSelectedRoom={setSelectedRoom}
-          session={session}
+          sessionUser={sessionUser}
           setShowConnectUserPopup={setShowConnectUserPopup}
         />
 
@@ -125,7 +121,7 @@ export default function ChatApp({ session }: { session: Session }) {
             messages={messages}
             messageBoxRef={messageBoxRef}
             otherUsers={otherUsers}
-            session={session}
+            sessionUser={sessionUser}
             socket={socket}
           />
         )}

@@ -8,6 +8,7 @@ import { unstable_getServerSession } from "next-auth/next";
 // Get all messages of the room
 export default async function handler(req, res) {
   const session = await unstable_getServerSession(req, res, authOptions);
+  // id of the room
   const { id } = req.query;
 
   await dbConnect();
@@ -32,7 +33,7 @@ export default async function handler(req, res) {
 
   // ************* Check if the user is in the room or not ************* //
   const isUserInRoom = room.users.find(
-    (roomUser) => roomUser.email === session.user.email
+    (roomUser) => roomUser._id === session.user._id
   );
 
   if (!isUserInRoom) {
