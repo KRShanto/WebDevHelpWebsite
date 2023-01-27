@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@next-auth/mongodb-adapter": "^1.1.1",
+    "@reduxjs/toolkit": "^1.9.1",
     "firebase": "^9.15.0",
     "mongoose": "^6.8.4",
     "next": "13.0.7",
@@ -19,6 +20,7 @@
     "react-spinners": "^0.13.7",
     "react-top-loading-bar": "^2.3.1",
     "sass": "^1.57.0",
+    "shortid": "^2.2.16",
     "socket.io": "^4.5.4",
     "socket.io-client": "^4.5.4",
     "swr": "^2.0.1"
