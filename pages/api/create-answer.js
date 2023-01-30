@@ -1,4 +1,4 @@
-import dbConnect from "../../lib/dbConnect";
+import Answer from "../../models/Answer";
 import Question from "../../models/Question";
 import { authOptions } from "./auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth/next";
@@ -6,9 +6,6 @@ import { unstable_getServerSession } from "next-auth/next";
 export default async function handler(req, res) {
   const session = await unstable_getServerSession(req, res, authOptions);
 
-  await dbConnect();
-
-  // ************* Check if the user is authenticated or not ************** //
   if (!session) {
     return res.status(401).json({
       type: "Unauthorized",
@@ -17,13 +14,12 @@ export default async function handler(req, res) {
   }
 
   // ******** Get the data from the request body ******** //
-  const { title, description, tags } = req.body;
+  const { description, questionId } = req.body;
 
-  // ************* Create a question ************** //
-  const newQuestion = new Question({
-    title,
+  // ************* Create a answer ************** //
+  const newAnswer = new Answer({
     description,
-    tags,
+    questionId,
     user: {
       _id: session.user._id,
       name: session.user.name,
@@ -32,23 +28,35 @@ export default async function handler(req, res) {
     },
   });
 
-  // ************* Save the question ************** //
+  // ************* Save the answer ************** //
   try {
     // save it
-    await newQuestion.save();
+    await newAnswer.save();
+
+    // update the question's answer count
+    await Question.updateOne(
+      {
+        _id: questionId,
+      },
+      {
+        $inc: {
+          answers: 1,
+        },
+      }
+    );
 
     // send the response
     res.status(201).json({
       type: "Success",
-      message: "Question created successfully",
-      data: newQuestion,
+      message: "Answer created successfully",
+      data: newAnswer,
     });
   } catch (error) {
     console.log(error);
 
     res.status(500).json({
       type: "ServerError",
-      message: "Something went wrong while saving the question",
+      message: "Something went wrong while saving the answer",
     });
   }
 }
