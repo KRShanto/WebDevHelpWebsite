@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function AskPage() {
   const { data: session, status } = useSession();
@@ -25,7 +26,7 @@ function Ask() {
   const [tags, setTags] = useState("");
   const [separatedTags, setSeparatedTags] = useState<string[]>([]);
 
-  const [titleError, setTitleError] = useState(false); // TODO: use this
+  const router = useRouter();
 
   // When the tags change, separate them
   useEffect(() => {
@@ -50,7 +51,8 @@ function Ask() {
     console.log("Submitting");
 
     if (!title) {
-      setTitleError(true);
+      return;
+      // TODO: show error
     }
 
     const res = await fetch("/api/create-question", {
@@ -70,8 +72,9 @@ function Ask() {
     console.log("Json : ", json);
 
     if (json.type === "Success") {
-      console.log("Success");
+      // console.log("Success");
       // TODO: redirect to the question page
+      router.push(`/questions/${json.data.shortId}/${json.data.title}`);
     } else {
       console.log("Error");
     }
@@ -113,6 +116,14 @@ function Ask() {
         </div>
 
         <div className="tags">
+          <div className="separated-tags">
+            {separatedTags.map((tag, index) => (
+              <span className="tag" key={index}>
+                {tag}
+              </span>
+            ))}
+          </div>
+
           <label htmlFor="tags">Tags</label>
           <input
             type="text"
