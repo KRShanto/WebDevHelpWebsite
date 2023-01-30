@@ -1,18 +1,21 @@
 import mongoose, { Schema } from "mongoose";
+import shortId from "shortid";
 
 /*
 QuestionSchema  -> 
             AnswerSchema
                 -> CommentSchema
             DiscussionSchema
-                -> CommentSchema
 
 */
 
-const QuestionSchema = new Schema({
+export const QuestionSchema = new Schema({
   title: {
     type: String,
     required: true,
+  },
+  urlTitle: {
+    type: String,
   },
   description: {
     type: String,
@@ -20,6 +23,23 @@ const QuestionSchema = new Schema({
   tags: {
     type: [String],
   },
+  upVotes: {
+    type: Number,
+    default: 0,
+  },
+  downVotes: {
+    type: Number,
+    default: 0,
+  },
+  shortId: {
+    type: String,
+    default: shortId.generate,
+  },
+  answers: {
+    type: Number,
+    default: 0,
+  },
+
   user: {
     _id: {
       type: Schema.Types.ObjectId,
@@ -43,6 +63,18 @@ const QuestionSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+QuestionSchema.pre("save", function (next) {
+  // Before saving the question, replace the " " with "-" in the urlTitle
+  this.urlTitle = this.title.replace(/ /g, "-");
+
+  // If the upVotes is less than 0, set it to 0
+  if (this.downVotes < 0) {
+    this.downVotes = 0;
+  }
+
+  next();
 });
 
 const Question =
