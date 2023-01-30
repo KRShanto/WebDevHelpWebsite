@@ -74,7 +74,7 @@ function Ask() {
     if (json.type === "Success") {
       // console.log("Success");
       // TODO: redirect to the question page
-      router.push(`/questions/${json.data.shortId}/${json.data.title}`);
+      router.push(`/questions/${json.data.shortId}/${json.data.urlTitle}`);
     } else {
       console.log("Error");
     }

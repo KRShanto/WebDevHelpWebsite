@@ -264,7 +264,7 @@ export default function QuestionsPage({
 }
 
 export async function getServerSideProps(context: any) {
-  const { questionShortId } = context.params;
+  const { questionShortId, title } = context.params;
   const session = await unstable_getServerSession(
     // @ts-ignore
     context.req,
@@ -290,6 +290,17 @@ export async function getServerSideProps(context: any) {
   if (!question) {
     return {
       notFound: true,
+    };
+  }
+
+  // ************ Check if the title is correct *************** //
+  if (question.urlTitle !== title) {
+    // redirect to the correct url
+    return {
+      redirect: {
+        destination: `/questions/${question.shortId}/${question.urlTitle}`,
+        permanent: true,
+      },
     };
   }
 
