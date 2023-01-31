@@ -3,3 +3,5 @@
 (A) Show the currently connected users
 (B) Use a search engine such as Elasticsearch or Solr
 (B) Markdown editor
+(B) Create pages for tags
+(B) Create pages for users

@@ -2,57 +2,73 @@ import React from "react";
 import Link from "next/link";
 import dbConnect from "../../lib/dbConnect";
 import Question from "../../models/Question";
-import Answer from "../../models/Answer";
+import Image from "next/image";
+import SearchIcon from "../../public/icons/search.svg";
 
 export default function QuestionsPage({ questions }: any) {
   return (
-    <div className="questions-div">
+    <div className="questions-section">
       <div className="header">
-        <form action="#" className="search-question">
-          <label htmlFor="question-input">Search Questions</label>
+        <form className="search">
           <input
             type="text"
             id="question-input"
             placeholder="Search Questions"
           />
-          <button type="submit">Search</button>
+          <button type="submit">
+            <Image src={SearchIcon} alt="Search Icon" width={25} height={25} />
+          </button>
         </form>
 
-        <Link href="/questions/ask" className="ask-question">
+        <Link href="/questions/ask" className="ask">
           Ask Question
         </Link>
+      </div>
 
-        <div className="display-questions">
-          {questions.map((question: any) => (
-            <div className="question" key={question._id}>
-              <div className="user">
-                <p className="name">
-                  {question.user.name}
-                  {/* TODO: image */}
-                </p>
-              </div>
+      <div className="display">
+        {questions.map((question: any) => (
+          <div className="question" key={question._id}>
+            {/* <div className="user"> */}
+            <Image
+              className="user-image"
+              src={question.user.image}
+              width={70}
+              height={70}
+              alt={question.user.name}
+            />
+            {/* </div> */}
 
-              <div className="title">
-                <Link href={`/questions/${question.shortId}/${question.title}`}>
-                  {question.title}
-                </Link>
-              </div>
+            <div className="middle">
+              {/* <div className="text"> */}
+              <p className="name">{question.user.name}</p>
+              <Link
+                className="title"
+                href={`/questions/${question.shortId}/${question.urlTitle}`}
+              >
+                {question.title}
+              </Link>
+              {/* </div> */}
               <div className="tags">
                 {question.tags.map((tag: string, index: number) => (
-                  <span className="tag" key={index}>
-                    {tag}
-                  </span>
+                  <div key={index}>
+                    {tag && <span className="tag">{tag}</span>}
+                  </div>
                 ))}
               </div>
-              <div className="vote-count">{question.upVotes} Upvotes</div>
-              <div className="answer-count">{question.answers} Answers</div>
-
+            </div>
+            <div className="info">
+              <div className="vote-count">
+                <span className="count">{question.upVotes} </span>Upvotes
+              </div>
+              <div className="answer-count">
+                <span className="count">{question.answers}</span> Answers
+              </div>
               <div className="date">
                 {new Date(question.createdAt).toLocaleDateString()}
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );
