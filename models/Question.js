@@ -74,6 +74,11 @@ QuestionSchema.pre("save", function (next) {
     this.downVotes = 0;
   }
 
+  // If there is a ? in the urlTitle, remove it
+  if (this.urlTitle.includes("?")) {
+    this.urlTitle = this.urlTitle.replace("?", "");
+  }
+
   next();
 });
 
