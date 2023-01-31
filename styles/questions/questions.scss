@@ -6,15 +6,12 @@
     padding: 10px 80px;
 
     .search {
-      // border: 2px solid greenyellow;
-      // width: 600px;
       display: flex;
       align-items: center;
 
       input {
         font-size: 20px;
         padding: 10px;
-        //   border: 1px solid rgb(186, 186, 186);
         border: none;
         outline: none;
         box-shadow: 0 0 5px white;
@@ -27,7 +24,6 @@
       button {
         margin: 0 10px;
         background-color: transparent;
-        //   border: 1px solid white;
         border: none;
         outline: none;
         border-radius: 50%;
@@ -58,15 +54,13 @@
     margin-top: 30px;
 
     .question {
-      //   border: 2px solid red;
       width: 70vw;
       margin: 10px auto;
       display: flex;
-      //   align-content: center;
-      //   justify-content: center;
       align-items: center;
       padding: 10px;
       box-shadow: 0 0 5px rgb(56, 107, 247);
+      border-radius: 5px;
 
       .user-image {
         border: 2px solid white;
@@ -76,12 +70,9 @@
       }
 
       .middle {
-        // border: 2px solid greenyellow;
         display: flex;
         flex-direction: column;
-        // padding: 10px;
 
-        // .text {
         .name {
           font-weight: bold;
           color: rgb(5, 66, 157);
@@ -94,7 +85,6 @@
           margin: 10px 0;
           text-decoration: none;
         }
-        // }
 
         .tags {
           display: flex;
@@ -116,7 +106,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        // border: 2px solid yellow;
         margin-left: auto;
         font-size: 18px;
         color: rgb(201, 198, 198);
