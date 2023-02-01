@@ -34,9 +34,34 @@ export default async function handler(req, res) {
   if (answerVote) {
     // Check if the vote is same or not
     if (answerVote.vote === vote) {
+      // return res.status(200).json({
+      //   type: "Already",
+      //   message: "You already voted this answer",
+      // });
+
+      // Delete the answer vote
+      await AnswerVote.deleteOne({
+        answerId,
+        userId: session.user._id,
+      });
+
+      // Update the answer's vote count
+      await Answer.updateOne(
+        {
+          _id: answerId,
+        },
+        {
+          $inc: {
+            upVotes: vote === "UP" ? -1 : 0,
+            downVotes: vote === "DOWN" ? -1 : 0,
+          },
+        }
+      );
+
+      // send the response
       return res.status(200).json({
-        type: "Already",
-        message: "You already voted this answer",
+        type: "Success",
+        message: "Answer vote deleted successfully",
       });
     }
 
