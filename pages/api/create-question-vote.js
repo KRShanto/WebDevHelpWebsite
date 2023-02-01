@@ -18,6 +18,7 @@ export default async function handler(req, res) {
   // ******** Get the data from the request body ******** //
   const { questionId, vote } = req.body;
 
+  // Check if the vote is valid or not
   if (!Object.values(VoteType).includes(vote)) {
     return res.status(200).json({
       type: "InvalidVote",
@@ -39,9 +40,34 @@ export default async function handler(req, res) {
 
     // Check if the vote is same or not
     if (questionVote.vote === vote) {
+      // return res.status(200).json({
+      //   type: "Already",
+      //   message: "You already voted this question",
+      // });
+
+      // Delete the question vote
+      await QuestionVote.deleteOne({
+        questionId,
+        userId: session.user._id,
+      });
+
+      // Update the question's vote count
+      await Question.updateOne(
+        {
+          _id: questionId,
+        },
+        {
+          $inc: {
+            upVotes: vote === "UP" ? -1 : 0,
+            downVotes: vote === "DOWN" ? -1 : 0,
+          },
+        }
+      );
+
+      // send the response
       return res.status(200).json({
-        type: "Already",
-        message: "You already voted this question",
+        type: "Success",
+        message: "Question vote deleted successfully",
       });
     }
 
