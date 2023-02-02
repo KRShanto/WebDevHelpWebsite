@@ -2,8 +2,10 @@ import React from "react";
 import Link from "next/link";
 import dbConnect from "../../lib/dbConnect";
 import Question from "../../models/Question";
+import moment from "moment";
 import Image from "next/image";
 import SearchIcon from "../../public/icons/search.svg";
+import ClockIcon from "../../public/icons/clock.svg";
 
 export default function QuestionsPage({ questions }: any) {
   return (
@@ -64,7 +66,14 @@ export default function QuestionsPage({ questions }: any) {
                 <span className="count">{question.answers}</span> Answers
               </div>
               <div className="date">
-                {new Date(question.createdAt).toLocaleDateString()}
+                {/* {new Date(question.createdAt).toLocaleDateString()} */}
+                <Image
+                  src={ClockIcon}
+                  alt="Clock Icon"
+                  width={20}
+                  height={20}
+                />
+                {moment(question.createdAt).fromNow()}
               </div>
             </div>
           </div>

@@ -5,3 +5,4 @@
 (B) Markdown editor
 (B) Create pages for tags
 (B) Create pages for users
+(A) Make a scss variable for white color and use it for all other files

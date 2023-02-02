@@ -115,6 +115,15 @@
           color: rgb(0, 200, 255);
           font-weight: bold;
         }
+
+        .date {
+          display: flex;
+          align-items: center;
+
+          img {
+            margin-right: 5px;
+          }
+        }
       }
     }
   }

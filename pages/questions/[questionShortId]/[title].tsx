@@ -9,6 +9,18 @@ import { VoteType } from "../../../types/vote";
 import { authOptions } from "../../api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth/next";
 import { useRouter } from "next/router";
+import moment from "moment";
+import Image from "next/image";
+import UpArrow from "../../../public/icons/up-arrow.svg";
+import UpArrowSuccess from "../../../public/icons/up-arrow-success.svg";
+import DownArrow from "../../../public/icons/down-arrow.svg";
+import DownArrowSuccess from "../../../public/icons/down-arrow-success.svg";
+import ShareIcon from "../../../public/icons/share.svg";
+import SaveIcon from "../../../public/icons/save.svg";
+import ReportIcon from "../../../public/icons/report.svg";
+import ClockIcon from "../../../public/icons/clock.svg";
+
+const ICONS_SIZE = 25;
 
 export default function QuestionsPage({
   question,
@@ -19,10 +31,11 @@ export default function QuestionsPage({
 }: {
   question: any;
   answers: any;
-  questionVote: boolean;
+  questionVote: null | VoteType;
   answersVotes: any[];
   answersComments: any[];
 }) {
+  console.log("questionVote: ", questionVote);
   const [answerDescription, setAnswerDescription] = useState("");
   const [commentDescription, setCommentDescription] = useState("");
 
@@ -158,61 +171,296 @@ export default function QuestionsPage({
   return (
     <div className="question-page">
       <div className="question">
+        {/* <div className="main"> */}
         <h1 className="title">{question.title}</h1>
         <div className="description">{question.description}</div>
-        <p className="voted">
+        {/* </div> */}
+        {/* <p className="voted">
           {questionVote
-            ? question.vote === VoteType.UP
+            ? questionVote === VoteType.UP
               ? "You voted up"
               : "You voted down"
             : "no vote"}
-        </p>
+        </p> */}
 
-        <div className="info">
-          <div className="author">
-            <p className="name">{question.user.name}</p>
-            <p className="date">{question.createdAt}</p>
-            <p className="up-votes">{question.upVotes}</p>
-            <p className="down-votes">{question.downVotes}</p>
+        <div className="actions-info-section">
+          <div className="actions">
+            <div className="votes">
+              {/* <div className="up-votes vote"> */}
+              <button className="up-votes vote" onClick={handleQuestionVoteUP}>
+                {questionVote ? (
+                  questionVote === VoteType.UP ? (
+                    <Image
+                      src={UpArrowSuccess}
+                      alt="Up arrow"
+                      width={ICONS_SIZE}
+                      height={ICONS_SIZE}
+                    />
+                  ) : (
+                    <Image
+                      src={UpArrow}
+                      alt="Up arrow"
+                      width={ICONS_SIZE}
+                      height={ICONS_SIZE}
+                    />
+                  )
+                ) : (
+                  <Image
+                    src={UpArrow}
+                    alt="Up arrow"
+                    width={ICONS_SIZE}
+                    height={ICONS_SIZE}
+                  />
+                )}
+                {question.upVotes}
+              </button>
+              {/* </div> */}
+              {/* <div className="down-votes vote"> */}
+              {/* <button onClick={handleQuestionVoteDown}>
+                  <Image
+                    src={DownArrow}
+                    alt="Down arrow"
+                    width={ARROW_SIZE}
+                    height={ARROW_SIZE}
+                  />
+                </button>
+                {question.downVotes} */}
+              <button
+                className="down-votes vote"
+                onClick={handleQuestionVoteDown}
+              >
+                {questionVote ? (
+                  questionVote === VoteType.DOWN ? (
+                    <Image
+                      src={DownArrowSuccess}
+                      alt="Down arrow"
+                      width={ICONS_SIZE}
+                      height={ICONS_SIZE}
+                    />
+                  ) : (
+                    <Image
+                      src={DownArrow}
+                      alt="Down arrow"
+                      width={ICONS_SIZE}
+                      height={ICONS_SIZE}
+                    />
+                  )
+                ) : (
+                  <Image
+                    src={DownArrow}
+                    alt="Down arrow"
+                    width={ICONS_SIZE}
+                    height={ICONS_SIZE}
+                  />
+                )}
+                {question.downVotes}
+              </button>
+              {/* </div> */}
+            </div>
+
+            <button className="share">
+              <Image
+                src={ShareIcon}
+                alt="Share icon"
+                width={ICONS_SIZE}
+                height={ICONS_SIZE}
+              />
+              Share
+            </button>
+            <button className="save">
+              <Image
+                src={SaveIcon}
+                alt="Save icon"
+                width={ICONS_SIZE}
+                height={ICONS_SIZE}
+              />
+              Save
+            </button>
+            <button className="report">
+              <Image
+                src={ReportIcon}
+                alt="Report icon"
+                width={ICONS_SIZE}
+                height={ICONS_SIZE}
+              />
+              Report
+            </button>
+
+            <button className="created-date">
+              {" "}
+              {/* Created at <span className="date">{question.createdAt}</span> */}
+              {/* Asked <..> ago */}
+              {/* Asked{" "} */}
+              {/* <span className="date"> */}
+              <Image
+                src={ClockIcon}
+                alt="Clock icon"
+                width={ICONS_SIZE}
+                height={ICONS_SIZE}
+              />
+              {moment(question.createdAt).fromNow()}
+              {/* </span> */}
+            </button>
           </div>
+
+          {/* <div className="info"> */}
+          <div className="author">
+            <div className="asked-by">Asked by</div>
+            <div className="image-and-name">
+              <Image
+                src={question.user.image}
+                alt="Picture of the author"
+                width={50}
+                height={50}
+              />
+              <p className="name">{question.user.name}</p>
+            </div>
+          </div>
+          {/* </div> */}
         </div>
 
-        <div className="actions">
+        {/* <div className="actions">
           <button onClick={handleQuestionVoteUP}>UP vote</button>
           <button onClick={handleQuestionVoteDown}>Down vote</button>
-        </div>
+        </div> */}
       </div>
 
-      <div className="answers">
-        <div className="show-answer">
-          {answersState.map((answer: any, index: number) => {
-            return (
-              <div className="answer" key={index}>
-                <div className="description">{answer.description}</div>
-                <div className="info">
-                  <p className="name">{answer.user.name}</p>
-                  <p className="date">{answer.createdAt}</p>
-                  <p className="up-votes">{answer.upVotes}</p>
-                  <p className="down-votes">{answer.downVotes}</p>
-                  <div className="voted">
-                    {answersVotesState[index] === VoteType.UP
-                      ? "You voted up"
-                      : answersVotesState[index] === VoteType.DOWN
-                      ? "You voted down"
-                      : "no vote"}
+      {/* TODO: Discussion */}
+      <div className="down">
+        <div className="answers">
+          <div className="show-answer">
+            {answersState.map((answer: any, index: number) => {
+              return (
+                <div
+                  className="answer-section"
+                  id={"answer-" + (index + 1)}
+                  key={index}
+                >
+                  <div className="header">
+                    <h2>
+                      <a href={"#answer-" + (index + 1)}>Answer {index + 1}</a>
+                    </h2>
                   </div>
-                </div>
-                <div className="actions">
-                  <button onClick={() => handleAnswerVoteUp(answer._id)}>
-                    Up Vote
-                  </button>
-                  <button onClick={() => handleAnswerVoteDown(answer._id)}>
-                    Down Vote
-                  </button>
+                  <div className="answer">
+                    <p className="description">{answer.description}</p>
+                    <div className="actions-info-section">
+                      <div className="actions">
+                        <div className="votes">
+                          <button
+                            className="up-votes vote"
+                            onClick={() => handleAnswerVoteUp(answer._id)}
+                          >
+                            {answersVotesState[index] === VoteType.UP ? (
+                              <Image
+                                src={UpArrowSuccess}
+                                alt="Up arrow"
+                                width={ICONS_SIZE}
+                                height={ICONS_SIZE}
+                              />
+                            ) : (
+                              <Image
+                                src={UpArrow}
+                                alt="Up arrow"
+                                width={ICONS_SIZE}
+                                height={ICONS_SIZE}
+                              />
+                            )}
+                            {answer.upVotes}
+                          </button>
+                          <button
+                            className="down-votes vote"
+                            onClick={() => handleAnswerVoteDown(answer._id)}
+                          >
+                            {answersVotesState[index] === VoteType.DOWN ? (
+                              <Image
+                                src={DownArrowSuccess}
+                                alt="Down arrow"
+                                width={ICONS_SIZE}
+                                height={ICONS_SIZE}
+                              />
+                            ) : (
+                              <Image
+                                src={DownArrow}
+                                alt="Down arrow"
+                                width={ICONS_SIZE}
+                                height={ICONS_SIZE}
+                              />
+                            )}
+                            {answer.downVotes}
+                          </button>
 
-                  <div className="add-comment">
-                    <form onSubmit={(e) => handleAddComment(e, answer._id)}>
-                      <textarea
+                          <button className="share">
+                            <Image
+                              src={ShareIcon}
+                              alt="Share icon"
+                              width={ICONS_SIZE}
+                              height={ICONS_SIZE}
+                            />
+                            Share
+                          </button>
+
+                          <button className="report">
+                            <Image
+                              src={ReportIcon}
+                              alt="Report icon"
+                              width={ICONS_SIZE}
+                              height={ICONS_SIZE}
+                            />
+                            Report
+                          </button>
+
+                          {/* <button onClick={() => handleAnswerVoteUp(answer._id)}>
+                          Up Vote
+                          </button>
+                          <button
+                          onClick={() => handleAnswerVoteDown(answer._id)}
+                          >
+                          Down Vote 
+                          </button>
+              */}
+                        </div>
+                        <button className="created-date">
+                          <Image
+                            src={ClockIcon}
+                            alt="Clock icon"
+                            width={ICONS_SIZE}
+                            height={ICONS_SIZE}
+                          />
+                          {moment(answer.createdAt).fromNow()}
+                        </button>
+                      </div>
+                      {/* <div className="info">
+                      <p className="name">{answer.user.name}</p>
+                      <p className="date">{answer.createdAt}</p>
+                      <p className="up-votes">{answer.upVotes}</p>
+                      <p className="down-votes">{answer.downVotes}</p>
+                      <div className="voted">
+                      {answersVotesState[index] === VoteType.UP
+                        ? "You voted up"
+                        : answersVotesState[index] === VoteType.DOWN
+                        ? "You voted down"
+                        : "no vote"}
+                        </div>
+                      </div> */}
+                      <div className="author">
+                        <div className="asked-by">Answered by</div>
+                        <div className="image-and-name">
+                          <Image
+                            src={answer.user.image}
+                            alt="Picture of the author"
+                            width={50}
+                            height={50}
+                          />
+                          <p className="name">{answer.user.name}</p>
+                        </div>
+                      </div>
+                    </div>
+                    {/* <div className="add-comment"> */}
+                    {/* <form
+                      className="add-comment"
+                      onSubmit={(e) => handleAddComment(e, answer._id)}
+                    >
+                      <input
                         name="content"
                         placeholder="Add your comment"
                         value={commentDescription}
@@ -221,41 +469,73 @@ export default function QuestionsPage({
                         }
                       />
                       <button type="submit">Add Comment</button>
-                    </form>
+                    </form> */}
+                    {/* </div> */}
                   </div>
-                </div>
-                <div className="comments">
-                  {answersComments[index] &&
-                    answersComments[index].map(
-                      (comment: any, index: number) => {
-                        return (
-                          <div className="comment" key={index}>
-                            <div className="description">
-                              {comment.description}
-                            </div>
-                            <div className="info">
-                              <p className="name">{comment.user.name}</p>
-                              <p className="date">{comment.createdAt}</p>
-                            </div>
-                          </div>
-                        );
-                      }
-                    )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                  <div className="comments">
+                    {answersComments[index] &&
+                      answersComments[index].length > 0 && (
+                        <>
+                          <p className="comments-text">Comments</p>
+                          {answersComments[index].map(
+                            (comment: any, index: number) => {
+                              return (
+                                <div className="comment" key={index}>
+                                  {/* <div className="description">
+                                {comment.description}
+                                </div>
+                                <div className="info">
+                                <p className="name">{comment.user.name}</p>
+                                <p className="date">{comment.createdAt}</p>
+                              </div> */}
 
-        <div className="add-answer">
-          <form onSubmit={handleAddAnswer}>
+                                  <Image
+                                    className="user-image"
+                                    src={comment.user.image}
+                                    alt="Picture of the author"
+                                    width={50}
+                                    height={50}
+                                  />
+                                  <div className="middle">
+                                    <p className="name">{comment.user.name} </p>
+                                    <div className="description">
+                                      {comment.description}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            }
+                          )}
+                        </>
+                      )}
+                  </div>
+                  <form
+                    className="add-comment"
+                    onSubmit={(e) => handleAddComment(e, answer._id)}
+                  >
+                    <input
+                      name="content"
+                      placeholder="Add your comment"
+                      value={commentDescription}
+                      onChange={(event) =>
+                        setCommentDescription(event.target.value)
+                      }
+                    />
+                    <button type="submit">Add Comment</button>
+                  </form>
+                </div>
+              );
+            })}
+          </div>
+
+          <form className="add-answer" onSubmit={handleAddAnswer}>
+            <h1 className="heading">Add your answer</h1>
             <textarea
               name="content"
-              placeholder="Add your answer"
               value={answerDescription}
               onChange={(event) => setAnswerDescription(event.target.value)}
             />
-            <button type="submit">Add Answer</button>
+            <button type="submit">Post Your Answer</button>
           </form>
         </div>
       </div>
