@@ -32,8 +32,12 @@ export default async function handler(req, res) {
   });
 
   if (answerVote) {
+    console.log("vote: ", vote);
+    console.log("answerVote.vote: ", answerVote.vote);
     // Check if the vote is same or not
     if (answerVote.vote === vote) {
+      console.log("It is true");
+
       // return res.status(200).json({
       //   type: "Already",
       //   message: "You already voted this answer",
@@ -66,7 +70,7 @@ export default async function handler(req, res) {
     }
 
     // Update the answer vote
-    await Answer.updateOne(
+    await AnswerVote.updateOne(
       {
         answerId,
         userId: session.user._id,
