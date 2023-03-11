@@ -27,8 +27,8 @@ export default function Question({
         </div>
 
         <Author
-          name={question.author.name}
-          image={question.author.image}
+          name={question.user.name}
+          image={question.user.image}
           verb="Asked"
         />
       </div>
