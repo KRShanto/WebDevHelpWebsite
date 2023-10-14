@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
+import NotLoggedIn from "../../components/NotLoggedIn";
 
 export default function AskPage() {
   const { data: session, status } = useSession();
 
   if (status === "unauthenticated") {
-    return (
-      <div>
-        <h1>You are not logged in</h1>
-        <button onClick={() => signIn()}>Sign in</button>
-      </div>
-    );
+    return <NotLoggedIn />;
   } else if (status === "authenticated") {
     return <Ask />;
   } else {
@@ -31,7 +27,12 @@ function Ask() {
   // When the tags change, separate them
   useEffect(() => {
     const separatedTags = tags.split(" ");
-    setSeparatedTags(separatedTags);
+
+    console.log("Separated Tags : ", separatedTags);
+    // remove the empty spaces
+    const filteredTags = separatedTags.filter((tag) => tag !== "");
+
+    setSeparatedTags(filteredTags);
   }, [tags]);
 
   function openEditor() {
@@ -84,14 +85,14 @@ function Ask() {
     <div className="ask-question">
       <h1 className="heading">Ask a question</h1>
 
-      <div className="editor-preview-header">
+      {/* <div className="editor-preview-header">
         <button className="editor" onClick={openEditor}>
           Editor
         </button>
         <button className="preview" onClick={openPreview}>
           Preview
         </button>
-      </div>
+      </div> */}
 
       <form className="editor" onSubmit={handleSubmit}>
         <div className="title">

@@ -1,18 +1,14 @@
 import { useSession, signIn } from "next-auth/react";
 import Head from "next/head";
 import ChatApp from "../components/chat/ChatApp";
+import NotLoggedIn from "../components/NotLoggedIn";
 
 export default function ChatPage() {
   const { data: session, status } = useSession();
 
   if (status === "unauthenticated") {
     // TODO: style this
-    return (
-      <div>
-        <h1>You are not logged in</h1>
-        <button onClick={() => signIn()}>Sign in</button>
-      </div>
-    );
+    return <NotLoggedIn />;
   } else if (status === "authenticated") {
     return (
       <>
